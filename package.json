@@ -1,0 +1,38 @@
+{
+  "name": "homebridge-senec-battery",
+  "version": "1.0.0",
+  "description": "Homebridge Senec battery",
+  "main": "dist/static-platform.js",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run build",
+    "postpublish": "npm run clean",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Link",
+  "engines": {
+    "homebridge": ">=1.0.0"
+  },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "license": "ISC",
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buddyshome/homebridge-senec-battery"
+  },
+  "bugs": {
+    "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.7",
+    "typescript": "^5.0.4",
+    "rimraf": "^5.0.0",
+    "homebridge": "^1.6.1"
+  }
+}
