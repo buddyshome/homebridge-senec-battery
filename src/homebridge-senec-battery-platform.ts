@@ -1,5 +1,5 @@
 import {AccessoryPlugin, API, HAP, Logging, PlatformConfig, StaticPlatformPlugin,} from "homebridge";
-import {ExampleSwitch} from "./switch-accessory";
+import { HomebridgeSenecBattery } from "./homebridge-senec-battery";
 
 const PLATFORM_NAME = "homebridge-senec-battery";
 
@@ -36,13 +36,15 @@ export = (api: API) => {
 class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
 
   private readonly log: Logging;
+  private readonly config: PlatformConfig;
+  private readonly name: string;
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
-
-    // probably parse config or something here
-
-    log.info("Example platform finished initializing!");
+    this.config = config;
+    this.name = <string>config.name;
+    
+    log.info(`${this.name} finished initializing!`);
   }
 
   /*
@@ -53,8 +55,8 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
    */
   accessories(callback: (foundAccessories: AccessoryPlugin[]) => void): void {
     callback([
-      new ExampleSwitch(hap, this.log, "Switch 1"),
-      new ExampleSwitch(hap, this.log, "Switch 2"),
+      new HomebridgeSenecBattery(hap, this.log, this.config, `${this.name} Battery`),
+      
     ]);
   }
 

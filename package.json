@@ -2,13 +2,15 @@
   "name": "homebridge-senec-battery",
   "version": "1.0.0",
   "description": "Homebridge Senec battery",
-  "main": "dist/static-platform.js",
+  "main": "dist/homebridge-senec-battery-platform.js",
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "npm run build && npm link senec-battery && npm link && nodemon",
+    "start": "npm run build && npm link senec-battery && npm link && tsc && homebridge -I -D"
   },
   "author": "Alexander Link",
   "engines": {
@@ -30,9 +32,16 @@
     "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
   },
   "devDependencies": {
-    "@types/node": "16.11.7",
-    "typescript": "^5.0.4",
+    "@types/node": "^18.16.20",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.45.0",
+    "homebridge": "^1.6.1",
+    "nodemon": "^2.0.22",
     "rimraf": "^5.0.0",
-    "homebridge": "^1.6.1"
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "homebridge-config-ui-x": "^4.55.1"
   }
 }
