@@ -1,5 +1,5 @@
 import {AccessoryPlugin, API, HAP, Logging, PlatformConfig, StaticPlatformPlugin,} from "homebridge";
-import { HomebridgeSenecBattery } from "./homebridge-senec-battery";
+import { HomebridgeSenecBatteryAssoc } from "./homebridge-senec-battery-assoc";
 
 const PLATFORM_NAME = "homebridge-senec-battery";
 
@@ -55,7 +55,7 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
    */
   accessories(callback: (foundAccessories: AccessoryPlugin[]) => void): void {
     callback([
-      new HomebridgeSenecBattery(hap, this.log, this.config, `${this.name} Battery`),
+      new HomebridgeSenecBatteryAssoc(hap, this.log, this.config, `${this.name} Battery`),
       
     ]);
   }

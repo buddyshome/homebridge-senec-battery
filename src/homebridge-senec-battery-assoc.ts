@@ -13,7 +13,7 @@ import {
 import { SenecAPI } from "senec-battery";
 
 
-export class HomebridgeSenecBattery implements AccessoryPlugin {
+export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
     private readonly log: Logging;
 
@@ -33,10 +33,8 @@ export class HomebridgeSenecBattery implements AccessoryPlugin {
         this.hap = hap;
         this.host = config.host;
 
-       
-        
-
-        log.info(JSON.stringify(this.state_trans));
+        // Init conversion
+        this.init_state();
 
         this.BatteryService = new hap.Service.Battery(name);
 
@@ -312,7 +310,7 @@ export class HomebridgeSenecBattery implements AccessoryPlugin {
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`Status is ${SenecResponse.getEnergyStateText()}`);
+        this.log.debug(`Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
 
         return this.getChargingState4EnergyState( SenecResponse.getEnergyState() );
     }
