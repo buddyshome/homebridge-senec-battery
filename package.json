@@ -22,7 +22,10 @@
   "license": "ISC",
   "files": [
     "LICENSE",
-    "dist"
+    "dist",
+    "src",
+    "config.schema.json",
+    "README.md"
   ],
   "repository": {
     "type": "git",
