@@ -39,9 +39,10 @@
     "homebridge": "^1.6.1",
     "nodemon": "^2.0.22",
     "rimraf": "^5.0.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "homebridge-config-ui-x": "^4.55.1"
   },
   "dependencies": {
-    "homebridge-config-ui-x": "^4.55.1"
+    "senec-battery": "^1.0.0"
   }
 }
