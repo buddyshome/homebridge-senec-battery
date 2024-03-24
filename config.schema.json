@@ -13,16 +13,29 @@
                 "default": "homebridge-senec-battery",
                 "description": "Plugin name as displayed in the Homebridge log."
             },
-            "host": {
-                "title": "Host/IP",
-                "type": "string",
-                "required": true,
-                "default": ""
+            "devices": {
+                "type": "array",
+                "items": {
+                    "title": "Senec-Battery",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "title": "Name",
+                            "description": "This name will be shown in the homebridge log and will be used as the default name when the device is added to HomeKit. Note though that setting this value after the device has been added will not change the name in HomeKit.",
+                            "type": "string",
+                            "required": true,
+                            "placeholder": "Senec-Battery-Master"
+                        },
+                        "host": {
+                            "title": "IP address or hostname",
+                            "description": "Enter IP or Hostname",
+                            "type": "string",
+                            "required": true,
+                            "placeholder": "e.g. 192.168.1.100"
+                        }
+                    }
+                }
             }
         }
-    },
-    "form": [
-        "name",
-        "host"
-    ]
+    }
 }

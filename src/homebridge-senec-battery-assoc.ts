@@ -27,11 +27,11 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private readonly SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
 
-    constructor(hap: HAP, log: Logging, config: PlatformConfig, name: string) {
+    constructor(hap: HAP, log: Logging, name: string, host: string) {
         this.log = log;
         this.name = name;
         this.hap = hap;
-        this.host = config.host;
+        this.host = host;
 
         // Init conversion
         this.init_state();
@@ -278,7 +278,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`Battery Level is ${SenecResponse.getBatteryLevel()}`);
+        this.log.debug(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
 
         if (SenecResponse.getBatteryLevel() > 0) {
 
@@ -291,26 +291,26 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     }
 
     async handleBatteryLevelGet() {
-        this.log.debug('Triggered GET BatteryLevel');
+        this.log.debug('%s - Triggered GET BatteryLevel', this.name);
 
         let SenecResponse = await this.SenecApi.fetchData();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`Battery Level is ${SenecResponse.getBatteryLevel()}`);
+        this.log.debug(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
 
         return SenecResponse.getBatteryLevel();
     }
 
 
     async handleChargingStateGet() {
-        this.log.debug('Triggered GET ChargingState');
+        this.log.debug('%s - Triggered GET ChargingState', this.name);
 
         let SenecResponse = await this.SenecApi.fetchData();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
+        this.log.debug(`${this.name} - Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
 
         return this.getChargingState4EnergyState( SenecResponse.getEnergyState() );
     }
@@ -321,7 +321,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
      * Typical this only ever happens at the pairing process.
      */
     identify(): void {
-        this.log("Identify!");
+        this.log("${this.name} - Identify!");
     }
 
     /*

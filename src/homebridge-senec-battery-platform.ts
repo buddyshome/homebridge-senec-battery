@@ -54,10 +54,15 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
    * The set of exposed accessories CANNOT change over the lifetime of the plugin!
    */
   accessories(callback: (foundAccessories: AccessoryPlugin[]) => void): void {
-    callback([
-      new HomebridgeSenecBatteryAssoc(hap, this.log, this.config, `${this.name} Battery`),
-      
-    ]);
-  }
+
+    var la_assoc : AccessoryPlugin[] = [];
+
+    for (var device of this.config.devices) {
+      la_assoc.push( new HomebridgeSenecBatteryAssoc(hap, this.log, device.name, device.host ) )
+    }
+        
+    callback(la_assoc);
+ 
+   }
 
 }
