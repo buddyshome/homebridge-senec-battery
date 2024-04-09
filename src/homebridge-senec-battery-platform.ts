@@ -35,9 +35,9 @@ export = (api: API) => {
 
 class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
 
-  private readonly log: Logging;
-  private readonly config: PlatformConfig;
-  private readonly name: string;
+  private log: Logging;
+  private config: PlatformConfig;
+  private name: string;
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
