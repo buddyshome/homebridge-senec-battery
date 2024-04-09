@@ -1,6 +1,6 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Homebridge Senec battery",
   "main": "dist/homebridge-senec-battery-platform.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
   },
   "dependencies": {
-    "senec-battery" : "^1.4.0"
+    "senec-battery": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.20",
