@@ -15,16 +15,16 @@ import { SenecAPI } from "senec-battery";
 
 export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
-    private readonly log: Logging;
+    private log: Logging;
 
     // This property must be existent!!
     name: string;
 
-    private readonly BatteryService: Service;
-    private readonly informationService: Service;
-    private readonly hap: HAP;
-    private readonly host: string;
-    private readonly SenecApi: SenecAPI;
+    private BatteryService: Service;
+    private informationService: Service;
+    private hap: HAP;
+    private host: string;
+    private SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
 
     constructor(hap: HAP, log: Logging, name: string, host: string) {
@@ -274,7 +274,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     async handleStatusLowBatteryGet() {
         this.log.debug('Triggered GET StatusLowBattery');
 
-        let SenecResponse = await this.SenecApi.fetchData();
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
@@ -293,7 +293,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     async handleBatteryLevelGet() {
         this.log.debug('%s - Triggered GET BatteryLevel', this.name);
 
-        let SenecResponse = await this.SenecApi.fetchData();
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
@@ -306,7 +306,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     async handleChargingStateGet() {
         this.log.debug('%s - Triggered GET ChargingState', this.name);
 
-        let SenecResponse = await this.SenecApi.fetchData();
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
