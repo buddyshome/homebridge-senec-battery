@@ -26,12 +26,14 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private host: string;
     private SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
+    private verbose : boolean;
 
-    constructor(hap: HAP, log: Logging, name: string, host: string) {
+    constructor(hap: HAP, log: Logging, name: string, host: string, verbose: boolean) {
         this.log = log;
         this.name = name;
         this.hap = hap;
         this.host = host;
+        this.verbose = verbose;
 
         // Init conversion
         this.init_state();
@@ -57,7 +59,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
             .setCharacteristic(hap.Characteristic.Manufacturer, "Senec")
             .setCharacteristic(hap.Characteristic.Model, "N/A");
 
-        log.info("'%s' created!", name);
+            if (this.verbose) this.log.info("'%s' created!", name);
     }
 
     getChargingState4EnergyState(iStateNbr: number): number {
@@ -272,13 +274,13 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     * Handle requests to get the current value of the "Status Low Battery" characteristic
     */
     async handleStatusLowBatteryGet() {
-        this.log.debug('Triggered GET StatusLowBattery');
+        if (this.verbose) this.log.info('Triggered GET StatusLowBattery');
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
+        if (this.verbose) this.log.info(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
 
         if (SenecResponse.getBatteryLevel() > 0) {
 
@@ -291,26 +293,27 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     }
 
     async handleBatteryLevelGet() {
-        this.log.debug('%s - Triggered GET BatteryLevel', this.name);
+        if (this.verbose)  this.log.info('%s - Triggered GET BatteryLevel', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
+
+        if (this.verbose) this.log.info(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
 
         return SenecResponse.getBatteryLevel();
     }
 
 
     async handleChargingStateGet() {
-        this.log.debug('%s - Triggered GET ChargingState', this.name);
+        if (this.verbose) this.log.info('%s - Triggered GET ChargingState', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
-        this.log.debug(`${this.name} - Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
+        if (this.verbose) this.log.info(`${this.name} - Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
 
         return this.getChargingState4EnergyState( SenecResponse.getEnergyState() );
     }
