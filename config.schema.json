@@ -32,6 +32,11 @@
                             "type": "string",
                             "required": true,
                             "placeholder": "e.g. 192.168.1.100"
+                        },
+                        "verbose": {
+                            "title": "Verbose Log",
+                            "description": "Enable more output in log",
+                            "type": "boolean"
                         }
                     }
                 }

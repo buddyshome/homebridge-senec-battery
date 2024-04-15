@@ -58,7 +58,7 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
     var la_assoc : AccessoryPlugin[] = [];
 
     for (var device of this.config.devices) {
-      la_assoc.push( new HomebridgeSenecBatteryAssoc(hap, this.log, device.name, device.host ) )
+      la_assoc.push( new HomebridgeSenecBatteryAssoc(hap, this.log, device.name, device.host, device.verbose ) )
     }
         
     callback(la_assoc);
