@@ -3,14 +3,21 @@ import {
     CharacteristicGetCallback,
     CharacteristicSetCallback,
     CharacteristicValue,
+    API,
     HAP,
     Logging,
     Service,
     CharacteristicEventTypes,
-    PlatformConfig
+    PlatformConfig,
+    Characteristic
 } from "homebridge";
 
-import { SenecAPI } from "senec-battery";
+import { SenecAPI, SenecResponse } from "senec-battery";
+
+import CharBatteryPower = require('./characteristics/senec-battery-power');
+import CharGridPower = require('./characteristics/senec-grid-power');
+import CharSolarPower = require('./characteristics/senec-solar-power');
+import CharHousePower = require('./characteristics/senec-house-power');
 
 
 export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
@@ -23,22 +30,42 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private BatteryService: Service;
     private informationService: Service;
     private hap: HAP;
+    private api: API;
     private host: string;
     private SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
-    private verbose : boolean;
+    private verbose: boolean;
+    private RefreshInterval: number = (1 * 1000 * 60); //10min
 
-    constructor(hap: HAP, log: Logging, name: string, host: string, verbose: boolean) {
+    //Characteristics
+    private CharBatteryPower: Characteristic;
+    private CharGridPower: Characteristic;
+    private CharSolarPower: Characteristic;
+    private CharHousePower: Characteristic;
+
+    constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean) {
         this.log = log;
         this.name = name;
         this.hap = hap;
+        this.api = api;
         this.host = host;
         this.verbose = verbose;
 
         // Init conversion
         this.init_state();
-
         this.BatteryService = new hap.Service.Battery(name);
+
+        //Get instance to Characteristics
+        this.CharBatteryPower = new (CharBatteryPower(this.api))();
+        this.CharGridPower = new (CharGridPower(this.api))();
+        this.CharSolarPower = new (CharSolarPower(this.api))();
+        this.CharHousePower = new (CharHousePower(this.api))();
+
+
+        this.BatteryService.addCharacteristic(this.CharBatteryPower);
+        this.BatteryService.addCharacteristic(this.CharGridPower);
+        this.BatteryService.addCharacteristic(this.CharSolarPower);
+        this.BatteryService.addCharacteristic(this.CharHousePower);
 
         this.SenecApi = new SenecAPI(this.host);
 
@@ -49,9 +76,14 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.BatteryService.getCharacteristic(hap.Characteristic.BatteryLevel)
             .onGet(this.handleBatteryLevelGet.bind(this));
 
-            
+
         this.BatteryService.getCharacteristic(hap.Characteristic.ChargingState)
-        .onGet(this.handleChargingStateGet.bind(this));
+            .onGet(this.handleChargingStateGet.bind(this));
+
+        this.CharBatteryPower.onGet(this.handleBatteryPowerGet.bind(this));
+        this.CharGridPower.onGet(this.handleGridPowerGet.bind(this));
+        this.CharSolarPower.onGet(this.handleSolarPowerGet.bind(this));
+        this.CharHousePower.onGet(this.handleHousePowerGet.bind(this));
 
 
 
@@ -59,7 +91,9 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
             .setCharacteristic(hap.Characteristic.Manufacturer, "Senec")
             .setCharacteristic(hap.Characteristic.Model, "N/A");
 
-            if (this.verbose) this.log.info("'%s' created!", name);
+        if (this.verbose) this.log.info("'%s' created!", name);
+
+        setInterval(this.updateValues.bind(this), this.RefreshInterval);
     }
 
     getChargingState4EnergyState(iStateNbr: number): number {
@@ -165,7 +199,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         // 95: 'BATTERIEDIAGNOSE (95)',
         // 96: 'BATTERIE BALANCIERUNG (96)',
         // 97: API.Characteristic.ChargingState.NOT_CHARGING
-       
+
         this.state_trans = {
             'ENERGY.STAT_STATE': {
                 0: this.hap.Characteristic.ChargingState.NOT_CHARGING,
@@ -270,13 +304,10 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         }
     }
 
-    /**
-    * Handle requests to get the current value of the "Status Low Battery" characteristic
-    */
-    async handleStatusLowBatteryGet() {
-        if (this.verbose) this.log.info('Triggered GET StatusLowBattery');
+    private GetStatusLowBatteryGet(io_SenecResponse: SenecResponse): number {
+        if (this.verbose) this.log.info('GET StatusLowBattery');
 
-        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+        let SenecResponse = io_SenecResponse;
         // set this to a valid value for StatusLowBattery
         let currentValue = 0;
 
@@ -292,21 +323,69 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         return currentValue;
     }
 
-    async handleBatteryLevelGet() {
-        if (this.verbose)  this.log.info('%s - Triggered GET BatteryLevel', this.name);
+
+    /**
+    * Handle requests to get the current value of the "Status Low Battery" characteristic
+    */
+    private async handleStatusLowBatteryGet(): Promise<number> {
+        if (this.verbose) this.log.info('Triggered GET StatusLowBattery');
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        return this.GetStatusLowBatteryGet(SenecResponse);
+    }
+
+    private async handleBatteryLevelGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET BatteryLevel', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
-        // set this to a valid value for StatusLowBattery
-        let currentValue = 0;
-
 
         if (this.verbose) this.log.info(`%s - Battery Level is ${SenecResponse.getBatteryLevel()}`, this.name);
 
         return SenecResponse.getBatteryLevel();
     }
 
+    private async handleBatteryPowerGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET Battery Power', this.name);
 
-    async handleChargingStateGet() {
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - Battery Power is ${SenecResponse.getBatteryChargingPower()} KW`, this.name);
+
+        return SenecResponse.getBatteryChargingPower();
+    }
+
+    private async handleGridPowerGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET Grid Power', this.name);
+
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - Grid Power is ${SenecResponse.getGridPower()} KW`, this.name);
+
+        return SenecResponse.getGridPower();
+    }
+
+    private async handleSolarPowerGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered PV Power', this.name);
+
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - PV Power is ${SenecResponse.getPVPower()} KW`, this.name);
+
+        return SenecResponse.getPVPower();
+    }
+
+    private async handleHousePowerGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered HousePower', this.name);
+
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - House Power is ${SenecResponse.getHousePower()} KW`, this.name);
+
+        return SenecResponse.getHousePower();
+    }
+
+
+    private async handleChargingStateGet(): Promise<number> {
         if (this.verbose) this.log.info('%s - Triggered GET ChargingState', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
@@ -315,10 +394,35 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
         if (this.verbose) this.log.info(`${this.name} - Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
 
-        return this.getChargingState4EnergyState( SenecResponse.getEnergyState() );
+        return this.getChargingState4EnergyState(SenecResponse.getEnergyState());
     }
 
-    
+
+
+
+    private async updateValues(): Promise<void> {
+        if (this.verbose) this.log.info(`${this.name} - Update Values triggered`);
+
+        let lo_response = await this.SenecApi.fetchDataBuffered();
+
+        //Charging State
+        this.BatteryService.getCharacteristic(this.hap.Characteristic.ChargingState)
+            .updateValue(this.getChargingState4EnergyState(lo_response.getEnergyState()));
+
+
+        this.BatteryService.getCharacteristic(this.hap.Characteristic.StatusLowBattery)
+            .updateValue(this.getChargingState4EnergyState(this.GetStatusLowBatteryGet(lo_response)));
+
+        this.BatteryService.getCharacteristic(this.hap.Characteristic.BatteryLevel)
+            .updateValue(lo_response.getBatteryLevel());
+
+        this.CharBatteryPower.updateValue(lo_response.getBatteryChargingPower());
+        this.CharGridPower.updateValue(lo_response.getGridPower());
+        this.CharSolarPower.updateValue(lo_response.getPVPower());
+        this.CharHousePower.updateValue(lo_response.getHousePower());
+    }
+
+
     /*
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
      * Typical this only ever happens at the pairing process.

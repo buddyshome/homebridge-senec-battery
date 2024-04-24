@@ -38,11 +38,13 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
   private log: Logging;
   private config: PlatformConfig;
   private name: string;
+  private api: API;
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
     this.config = config;
     this.name = <string>config.name;
+    this.api = api;
     
     log.info(`${this.name} finished initializing!`);
   }
@@ -58,7 +60,7 @@ class HomebridgeSenecBatteryPlatform implements StaticPlatformPlugin {
     var la_assoc : AccessoryPlugin[] = [];
 
     for (var device of this.config.devices) {
-      la_assoc.push( new HomebridgeSenecBatteryAssoc(hap, this.log, device.name, device.host, device.verbose ) )
+      la_assoc.push( new HomebridgeSenecBatteryAssoc(hap, this.api, this.log, device.name, device.host, device.verbose ) )
     }
         
     callback(la_assoc);
