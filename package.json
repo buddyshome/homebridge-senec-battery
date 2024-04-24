@@ -47,5 +47,8 @@
     "nodemon": "^2.0.22",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.4"
+  },
+  "dependencies": {
+    "senec-battery": "^1.10.0"
   }
 }
