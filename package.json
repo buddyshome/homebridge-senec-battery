@@ -38,7 +38,7 @@
     "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
   },
   "dependencies": {
-    "senec-battery": "^1.8.0"
+    "senec-battery": "^1.9.0"
   },
   "devDependencies": {
     "@types/node": "^18.19.31",

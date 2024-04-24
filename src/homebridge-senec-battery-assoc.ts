@@ -3,14 +3,17 @@ import {
     CharacteristicGetCallback,
     CharacteristicSetCallback,
     CharacteristicValue,
+    API,
     HAP,
     Logging,
     Service,
     CharacteristicEventTypes,
-    PlatformConfig
+    PlatformConfig,
+    Characteristic
 } from "homebridge";
 
 import { SenecAPI } from "senec-battery";
+import CharBatteryPower = require('./characteristics/senec-battery-power');
 
 
 export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
@@ -23,22 +26,30 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private BatteryService: Service;
     private informationService: Service;
     private hap: HAP;
+    private api: API;
     private host: string;
     private SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
-    private verbose : boolean;
+    private verbose: boolean;
+    private RefreshInterval : number = ( 1 * 1000 * 60 ); //10min
+    private CharBatteryPower : Characteristic;
 
-    constructor(hap: HAP, log: Logging, name: string, host: string, verbose: boolean) {
+    constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean) {
         this.log = log;
         this.name = name;
         this.hap = hap;
+        this.api = api;
         this.host = host;
         this.verbose = verbose;
 
         // Init conversion
         this.init_state();
-
         this.BatteryService = new hap.Service.Battery(name);
+
+        //Get instance to BatteryPower
+        this.CharBatteryPower = new (CharBatteryPower(this.api))();
+        this.CharBatteryPower.onGet(this.handleBatteryPowerGet.bind(this));
+        this.BatteryService.addCharacteristic(this.CharBatteryPower);
 
         this.SenecApi = new SenecAPI(this.host);
 
@@ -49,17 +60,20 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.BatteryService.getCharacteristic(hap.Characteristic.BatteryLevel)
             .onGet(this.handleBatteryLevelGet.bind(this));
 
-            
-        this.BatteryService.getCharacteristic(hap.Characteristic.ChargingState)
-        .onGet(this.handleChargingStateGet.bind(this));
 
+        this.BatteryService.getCharacteristic(hap.Characteristic.ChargingState)
+            .onGet(this.handleChargingStateGet.bind(this));
+
+        this.BatteryService.characteristics[1].handleGetRequest
 
 
         this.informationService = new hap.Service.AccessoryInformation()
             .setCharacteristic(hap.Characteristic.Manufacturer, "Senec")
             .setCharacteristic(hap.Characteristic.Model, "N/A");
 
-            if (this.verbose) this.log.info("'%s' created!", name);
+        if (this.verbose) this.log.info("'%s' created!", name);
+
+        setInterval(this.updateValues.bind(this), this.RefreshInterval );
     }
 
     getChargingState4EnergyState(iStateNbr: number): number {
@@ -165,7 +179,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         // 95: 'BATTERIEDIAGNOSE (95)',
         // 96: 'BATTERIE BALANCIERUNG (96)',
         // 97: API.Characteristic.ChargingState.NOT_CHARGING
-       
+
         this.state_trans = {
             'ENERGY.STAT_STATE': {
                 0: this.hap.Characteristic.ChargingState.NOT_CHARGING,
@@ -273,7 +287,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     /**
     * Handle requests to get the current value of the "Status Low Battery" characteristic
     */
-    async handleStatusLowBatteryGet() {
+    async handleStatusLowBatteryGet(): Promise<number> {
         if (this.verbose) this.log.info('Triggered GET StatusLowBattery');
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
@@ -292,8 +306,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         return currentValue;
     }
 
-    async handleBatteryLevelGet() {
-        if (this.verbose)  this.log.info('%s - Triggered GET BatteryLevel', this.name);
+    async handleBatteryLevelGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET BatteryLevel', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
         // set this to a valid value for StatusLowBattery
@@ -305,8 +319,18 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         return SenecResponse.getBatteryLevel();
     }
 
+    async handleBatteryPowerGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET BatteryPower', this.name);
 
-    async handleChargingStateGet() {
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - Battery Power is ${SenecResponse.getBatteryChargingPower()} KW`, this.name);
+
+        return SenecResponse.getBatteryChargingPower();
+    }
+
+
+    async handleChargingStateGet(): Promise<number> {
         if (this.verbose) this.log.info('%s - Triggered GET ChargingState', this.name);
 
         let SenecResponse = await this.SenecApi.fetchDataBuffered();
@@ -315,10 +339,21 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
         if (this.verbose) this.log.info(`${this.name} - Status is ${SenecResponse.getEnergyStateText()} Code: ${SenecResponse.getEnergyState()}`);
 
-        return this.getChargingState4EnergyState( SenecResponse.getEnergyState() );
+        return this.getChargingState4EnergyState(SenecResponse.getEnergyState());
     }
 
-    
+    async updateValues() : Promise<void> {
+        if (this.verbose) this.log.info(`${this.name} - Update Values triggered`);
+
+        let lo_response = await this.SenecApi.fetchDataBuffered( );
+        
+        //Charging State
+        this.BatteryService.getCharacteristic(this.hap.Characteristic.ChargingState).updateValue( this.getChargingState4EnergyState( lo_response.getEnergyState() ));
+        
+        this.CharBatteryPower.updateValue( lo_response.getBatteryChargingPower( ));
+    }
+
+
     /*
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
      * Typical this only ever happens at the pairing process.
