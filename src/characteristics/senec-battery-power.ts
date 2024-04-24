@@ -13,7 +13,7 @@ export = (homebridge : API ) => {
         unit: 'KW',
         maxValue: 1000,
         minValue: -1000,
-        minStep: 1,
+        minStep: 0.001,
         perms: [Perms.PAIRED_READ, Perms.NOTIFY]
       });
       this.value = this.getDefaultValue();
