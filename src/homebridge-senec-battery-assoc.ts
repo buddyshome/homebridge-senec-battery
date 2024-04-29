@@ -103,10 +103,10 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         setInterval(this.updateValues.bind(this), this.RefreshInterval);
     }
 
-    getChargingState4EnergyState(iStateNbr: number): number {
+    private getChargingState4EnergyState(iStateNbr: number): number {
         return this.state_trans["ENERGY.STAT_STATE"][iStateNbr];
     }
-    init_state() {
+    private init_state() : void {
 
         // 0: 'INITIALZUSTAND (0)',
         // 1: 'KEINE KOMMUNIKATION LADEGERAET (1)',
@@ -455,7 +455,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
      * Typical this only ever happens at the pairing process.
      */
-    identify(): void {
+    public identify(): void {
         this.log("${this.name} - Identify!");
     }
 
@@ -463,7 +463,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
      * This method is called directly after creation of this instance.
      * It should return all services which should be added to the accessory.
      */
-    getServices(): Service[] {
+    public getServices(): Service[] {
         return [
             this.informationService,
             this.BatteryService,
