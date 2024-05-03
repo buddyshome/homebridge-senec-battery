@@ -437,7 +437,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
 
         this.BatteryService.getCharacteristic(this.hap.Characteristic.StatusLowBattery)
-            .updateValue(this.getChargingState4EnergyState(this.GetStatusLowBatteryGet(lo_response)));
+            .updateValue(this.GetStatusLowBatteryGet(lo_response));
 
         this.BatteryService.getCharacteristic(this.hap.Characteristic.BatteryLevel)
             .updateValue(lo_response.getBatteryLevel());
