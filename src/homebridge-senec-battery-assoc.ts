@@ -442,12 +442,12 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.BatteryService.getCharacteristic(this.hap.Characteristic.BatteryLevel)
             .updateValue(lo_response.getBatteryLevel());
 
-        this.CharBatteryPower.updateValue(lo_response.getBatteryChargingPower());
-        this.CharGridPower.updateValue(lo_response.getGridPower());
-        this.CharSolarPower.updateValue(lo_response.getPVPower());
-        this.CharHousePower.updateValue(lo_response.getHousePower());
-        this.CharEnergyState.updateValue(lo_response.getEnergyState());
-        this.CharEnergyStateText.updateValue(lo_response.getEnergyStateText());
+        this.CharBatteryPower.setValue(lo_response.getBatteryChargingPower());
+        this.CharGridPower.setValue(lo_response.getGridPower());
+        this.CharSolarPower.setValue(lo_response.getPVPower());
+        this.CharHousePower.setValue(lo_response.getHousePower());
+        this.CharEnergyState.setValue(lo_response.getEnergyState());
+        this.CharEnergyStateText.setValue(lo_response.getEnergyStateText());
     }
 
 
