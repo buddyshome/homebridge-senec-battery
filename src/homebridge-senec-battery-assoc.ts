@@ -14,6 +14,7 @@ import {
 
 import { SenecAPI, SenecResponse } from "senec-battery";
 
+import ServiceGen = require('./services/senec-service-gen');
 import CharBatteryPower = require('./characteristics/senec-battery-power');
 import CharGridPower = require('./characteristics/senec-grid-power');
 import CharSolarPower = require('./characteristics/senec-solar-power');
@@ -39,6 +40,9 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private verbose: boolean;
     private RefreshInterval: number = (1 * 1000 * 60); //10min
 
+    //Services
+    private ServiceGen : Service;
+
     //Characteristics
     private CharBatteryPower: Characteristic;
     private CharGridPower: Characteristic;
@@ -46,6 +50,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private CharHousePower: Characteristic;
     private CharEnergyState: Characteristic;
     private CharEnergyStateText: Characteristic;
+
 
     constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean) {
         this.log = log;
@@ -59,6 +64,9 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.init_state();
         this.BatteryService = new hap.Service.Battery(name);
 
+        //Get instance of Service
+        this.ServiceGen = new (ServiceGen(this.api))();
+
         //Get instance to Characteristics
         this.CharBatteryPower = new (CharBatteryPower(this.api))();
         this.CharGridPower = new (CharGridPower(this.api))();
@@ -67,12 +75,13 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.CharEnergyState = new (CharEnergyState(this.api))(); 
         this.CharEnergyStateText = new (CharEnergyStateText(this.api))(); 
 
-        this.BatteryService.addCharacteristic(this.CharBatteryPower);
-        this.BatteryService.addCharacteristic(this.CharGridPower);
-        this.BatteryService.addCharacteristic(this.CharSolarPower);
-        this.BatteryService.addCharacteristic(this.CharHousePower);
-        this.BatteryService.addCharacteristic(this.CharEnergyState);
-        this.BatteryService.addCharacteristic(this.CharEnergyStateText);
+        //Add Characteristics to service        
+        this.ServiceGen.addCharacteristic(this.CharBatteryPower);
+        this.ServiceGen.addCharacteristic(this.CharGridPower);
+        this.ServiceGen.addCharacteristic(this.CharSolarPower);
+        this.ServiceGen.addCharacteristic(this.CharHousePower);
+        this.ServiceGen.addCharacteristic(this.CharEnergyState);
+        this.ServiceGen.addCharacteristic(this.CharEnergyStateText);
 
         this.SenecApi = new SenecAPI(this.host);
 
@@ -467,6 +476,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         return [
             this.informationService,
             this.BatteryService,
+            this.ServiceGen
         ];
     }
 
