@@ -440,10 +440,13 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
 
         let lo_response = await this.SenecApi.fetchDataBuffered();
 
+        //Display debug information
+        if (this.verbose) this.log.info(`${this.name} - Status is ${lo_response.getEnergyStateText()} Code: ${lo_response.getEnergyState()}`);
+
         //Charging State
         this.BatteryService.getCharacteristic(this.hap.Characteristic.ChargingState)
             .updateValue(this.getChargingState4EnergyState(lo_response.getEnergyState()));
-
+        
 
         this.BatteryService.getCharacteristic(this.hap.Characteristic.StatusLowBattery)
             .updateValue(this.GetStatusLowBatteryGet(lo_response));
