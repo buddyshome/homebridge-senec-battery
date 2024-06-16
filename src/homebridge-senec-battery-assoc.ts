@@ -240,7 +240,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
                 19: this.hap.Characteristic.ChargingState.NOT_CHARGING,
                 20: this.hap.Characteristic.ChargingState.NOT_CHARGEABLE,
                 21: this.hap.Characteristic.ChargingState.NOT_CHARGING,
-                22: this.hap.Characteristic.ChargingState.NOT_CHARGEABLE,
+                22: this.hap.Characteristic.ChargingState.NOT_CHARGING,
                 23: this.hap.Characteristic.ChargingState.CHARGING,
                 24: this.hap.Characteristic.ChargingState.CHARGING,
                 25: this.hap.Characteristic.ChargingState.CHARGING,
