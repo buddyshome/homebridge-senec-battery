@@ -1,6 +1,6 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.25.0",
+  "version": "2.26.0",
   "description": "Homebridge Senec battery",
   "main": "dist/homebridge-senec-battery-platform.js",
   "scripts": {
@@ -16,7 +16,9 @@
     "packupdate": "npm update --save"
   },
   "author": "Alexander Link",
-  "maintainers": ["Alexander Link"],
+  "maintainers": [
+    "Alexander Link"
+  ],
   "engines": {
     "homebridge": ">=1.0.0"
   },
