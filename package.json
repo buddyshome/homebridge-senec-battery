@@ -1,6 +1,6 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.29.0",
+  "version": "2.30.0",
   "description": "Homebridge Senec battery",
   "main": "dist/homebridge-senec-battery-platform.js",
   "scripts": {
@@ -46,9 +46,12 @@
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.57.0",
     "homebridge": "^1.8.3",
-    "homebridge-config-ui-x": "^4.56.2",
+    "homebridge-config-ui-x": "^4.56.4",
     "nodemon": "^3.1.4",
-    "rimraf": "^5.0.7",
-    "typescript": "^5.5.2"
+    "rimraf": "^5.0.9",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "senec-battery": "^1.11.0"
   }
 }
