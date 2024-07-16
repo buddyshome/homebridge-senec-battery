@@ -37,6 +37,16 @@
                             "title": "Verbose Log",
                             "description": "Enable more output in log",
                             "type": "boolean"
+                        },
+                        "ssl": {
+                            "title": "SSL",
+                            "description": "Switch to HTTPS",
+                            "type": "boolean"
+                        },
+                        "sslUnsecure": {
+                            "title": "SSL Unsecure",
+                            "description": "Ignore SSL errors",
+                            "type": "boolean"
                         }
                     }
                 }

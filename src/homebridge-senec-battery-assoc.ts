@@ -38,6 +38,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private SenecApi: SenecAPI;
     private state_trans!: { [key: string]: { [key: number]: number; }; };
     private verbose: boolean;
+    private ssl: boolean;
+    private sslUnsecure: boolean;
     private RefreshInterval: number = (1 * 1000 * 60); //10min
 
     //Services
@@ -52,13 +54,15 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private CharEnergyStateText: Characteristic;
 
 
-    constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean) {
+    constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean, ssl:boolean, sslUnsecure:boolean) {
         this.log = log;
         this.name = name;
         this.hap = hap;
         this.api = api;
         this.host = host;
         this.verbose = verbose;
+        this.ssl = ssl;
+        this.sslUnsecure = sslUnsecure;
 
         // Init conversion
         this.init_state();
@@ -83,7 +87,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.ServiceGen.addCharacteristic(this.CharEnergyState);
         this.ServiceGen.addCharacteristic(this.CharEnergyStateText);
 
-        this.SenecApi = new SenecAPI(this.host);
+        this.SenecApi = new SenecAPI(this.host, this.ssl, this.sslUnsecure);
 
         // create handlers for required characteristics
         this.BatteryService.getCharacteristic(hap.Characteristic.StatusLowBattery)
