@@ -54,6 +54,6 @@
   },
   "dependencies": {
     "homebridge-lib": "^7.1.4",
-    "senec-battery": "^1.12.0"
+    "senec-battery": "^1.13.0"
   }
 }
