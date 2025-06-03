@@ -20,7 +20,8 @@
     "Alexander Link"
   ],
   "engines": {
-    "homebridge": ">=1.0.0"
+    "homebridge": "^1.6.0 || ^2.0.0-beta.0",
+    "node": "^18.20.4 || ^20.15.1 || ^22"
   },
   "keywords": [
     "homebridge-plugin"
@@ -43,18 +44,18 @@
   "devDependencies": {
     "@eslint/js": "^9.14.0",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.14.1",
-    "eslint": "^9.25.1",
+    "@types/node": "^22.15.29",
+    "eslint": "^9.28.0",
     "homebridge": "^2.0.0-beta.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.31.0"
+    "typescript-eslint": "^8.33.1"
   },
   "dependencies": {
-    "homebridge-config-ui-x": "^4.73.0",
-    "homebridge-lib": "^7.1.4",
+    "homebridge-config-ui-x": "^4.75.0",
+    "homebridge-lib": "^7.1.5",
     "senec-battery": "^1.14.0"
   }
 }
