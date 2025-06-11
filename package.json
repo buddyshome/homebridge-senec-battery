@@ -11,8 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "npm run build && nodemon",
     "start": "npm run build && homebridge -I -D",
-    "link": "npm run unlink && npm link senec-battery",
-    "unlink": "npm unlink senec-battery",
+    "link": "npm unlink senec-battery && npm link senec-battery",
+    "unlink": "npm unlink senec-battery && npm install senec-battery@latest --save",
     "packupdate": "npm update --save"
   },
   "author": "Alexander Link",
@@ -42,20 +42,19 @@
     "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
   },
   "devDependencies": {
-    "@eslint/js": "^9.14.0",
-    "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.15.29",
-    "eslint": "^9.28.0",
-    "homebridge": "^2.0.0-beta.0",
-    "nodemon": "^3.1.10",
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.21.0",
+    "homebridge": "2.0.0-beta.27",
+    "nodemon": "^3.1.9",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.1"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1"
   },
   "dependencies": {
     "homebridge-config-ui-x": "^4.75.0",
-    "homebridge-lib": "^7.1.5",
-    "senec-battery": "^1.14.0"
+    "homebridge-lib": "^7.1.4",
+    "senec-battery": "^1.16.0"
   }
 }
