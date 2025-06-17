@@ -1,7 +1,7 @@
 
 import { API, Formats, Perms } from 'homebridge';
 
-export = (homebridge : API ) => {
+export default (homebridge : API ) => {
   const Charact = homebridge.hap.Characteristic;
 
   return class SenecBatteryPower extends Charact {

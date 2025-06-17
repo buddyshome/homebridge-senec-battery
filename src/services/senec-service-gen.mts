@@ -1,6 +1,6 @@
 import { API, Service } from 'homebridge';
 
-export = (homebridge : API ) => {
+export default (homebridge : API ) => {
     const Service = homebridge.hap.Service;
   
     return class SenecServiceGen extends Service {

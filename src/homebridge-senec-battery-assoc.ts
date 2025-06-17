@@ -14,13 +14,13 @@ import {
 
 import { SenecAPI, SenecResponse } from "senec-battery";
 
-import ServiceGen = require('./services/senec-service-gen');
-import CharBatteryPower = require('./characteristics/senec-battery-power');
-import CharGridPower = require('./characteristics/senec-grid-power');
-import CharSolarPower = require('./characteristics/senec-solar-power');
-import CharHousePower = require('./characteristics/senec-house-power');
-import CharEnergyState = require('./characteristics/senec-energy-state');
-import CharEnergyStateText = require('./characteristics/senec-energy-state-text');
+import ServiceGen from './services/senec-service-gen.mjs';
+import CharBatteryPower from './characteristics/senec-battery-power.js';
+import CharGridPower from './characteristics/senec-grid-power.js';
+import CharSolarPower from './characteristics/senec-solar-power.js';
+import CharHousePower from './characteristics/senec-house-power.js';
+import CharEnergyState from './characteristics/senec-energy-state.js';
+import CharEnergyStateText from './characteristics/senec-energy-state-text.js';
 
 
 export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
