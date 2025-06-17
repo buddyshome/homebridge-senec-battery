@@ -1,6 +1,6 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.41.0",
+  "version": "2.42.0",
   "description": "Homebridge Senec battery",
   "type": "module",
   "main": "dist/homebridge-senec-battery-platform.js",
