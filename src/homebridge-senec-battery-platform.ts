@@ -1,5 +1,5 @@
 import {AccessoryPlugin, API, HAP, Logging, PlatformConfig, StaticPlatformPlugin,} from "homebridge";
-import { HomebridgeSenecBatteryAssoc } from "./homebridge-senec-battery-assoc";
+import { HomebridgeSenecBatteryAssoc } from "./homebridge-senec-battery-assoc.js";
 
 const PLATFORM_NAME = "homebridge-senec-battery";
 
@@ -27,7 +27,7 @@ const PLATFORM_NAME = "homebridge-senec-battery";
  */
 let hap: HAP;
 
-export = (api: API) => {
+export default (api: API) => {
   hap = api.hap;
 
   api.registerPlatform(PLATFORM_NAME, HomebridgeSenecBatteryPlatform );
