@@ -1,6 +1,6 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.43.0",
+  "version": "2.44.0",
   "description": "Homebridge Senec battery",
   "type": "module",
   "main": "dist/homebridge-senec-battery-platform.js",
@@ -56,6 +56,6 @@
     "typescript-eslint": "^8.24.1"
   },
   "dependencies": {
-    "senec-battery": "^1.17.0"
+    "senec-battery": "^1.18.0"
   }
 }
