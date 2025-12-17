@@ -14,7 +14,9 @@
     "start": "npm run build && homebridge -I -D ",
     "link": "npm unlink senec-battery && npm link senec-battery",
     "unlink": "npm unlink senec-battery && npm install senec-battery@latest --save",
-    "packupdate": "npm update --save"
+    "packupdate": "npm update --save",
+    "preversion": "npm run build",
+    "postversion": "git push && git push --tags"
   },
   "author": "Alexander Link",
   "maintainers": [
