@@ -10,9 +10,9 @@ export default (homebridge : API ) => {
       super(SenecHousePower.DISPLAY_NAME, SenecHousePower.UUID, {
         format: Formats.FLOAT,
         unit: 'KW',
-        maxValue: 1000,
+        maxValue: 200,
         minValue: 0,
-        minStep: 0.001,
+        minStep: 0.05,
         perms: [Perms.PAIRED_READ, Perms.NOTIFY]
       });
       this.value = this.getDefaultValue();
