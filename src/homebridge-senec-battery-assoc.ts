@@ -21,6 +21,8 @@ import CharSolarPower from './characteristics/senec-solar-power.js';
 import CharHousePower from './characteristics/senec-house-power.js';
 import CharEnergyState from './characteristics/senec-energy-state.js';
 import CharEnergyStateText from './characteristics/senec-energy-state-text.js';
+import CharCaseTemp from './characteristics/senec-case-temp.js';
+import CharBatteryTemp from './characteristics/senec-battery-temp.js';
 
 
 export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
@@ -52,6 +54,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
     private CharHousePower: Characteristic;
     private CharEnergyState: Characteristic;
     private CharEnergyStateText: Characteristic;
+    private CharCaseTemp: Characteristic;
+    private CharBatteryTemp: Characteristic;
 
 
     constructor(hap: HAP, api: API, log: Logging, name: string, host: string, verbose: boolean, ssl:boolean, sslUnsecure:boolean) {
@@ -78,6 +82,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.CharHousePower = new (CharHousePower(this.api))();
         this.CharEnergyState = new (CharEnergyState(this.api))(); 
         this.CharEnergyStateText = new (CharEnergyStateText(this.api))(); 
+        this.CharCaseTemp = new (CharCaseTemp(this.api))();
+        this.CharBatteryTemp = new (CharBatteryTemp(this.api))();
 
         //Add Characteristics to service        
         this.ServiceGen.addCharacteristic(this.CharBatteryPower);
@@ -86,6 +92,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.ServiceGen.addCharacteristic(this.CharHousePower);
         this.ServiceGen.addCharacteristic(this.CharEnergyState);
         this.ServiceGen.addCharacteristic(this.CharEnergyStateText);
+        this.ServiceGen.addCharacteristic(this.CharCaseTemp);
+        this.ServiceGen.addCharacteristic(this.CharBatteryTemp);
 
         this.SenecApi = new SenecAPI(this.host, this.ssl, this.sslUnsecure);
 
@@ -106,6 +114,9 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.CharHousePower.onGet(this.handleHousePowerGet.bind(this));
         this.CharEnergyState.onGet(this.handleEnergyState.bind(this));
         this.CharEnergyStateText.onGet(this.handleEnergyStateText.bind(this));
+        this.CharCaseTemp.onGet(this.handleCaseTempGet.bind(this));
+        this.CharBatteryTemp.onGet(this.handleBatteryTempGet.bind(this));
+
 
         this.informationService = new hap.Service.AccessoryInformation()
             .setCharacteristic(hap.Characteristic.Manufacturer, "Senec")
@@ -436,6 +447,21 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         return SenecResponse.getEnergyStateText();
     }
 
+    private async handleCaseTempGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET Case Temperature', this.name);
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+        if (this.verbose) this.log.info(`%s - Case Temperature ${SenecResponse.getCaseTemperature()} °C`, this.name);
+
+        return SenecResponse.getCaseTemperature();
+    }
+
+    private async handleBatteryTempGet(): Promise<number> {
+        if (this.verbose) this.log.info('%s - Triggered GET Battery Temperature', this.name);
+        let SenecResponse = await this.SenecApi.fetchDataBuffered();
+
+        if (this.verbose) this.log.info(`%s - Battery Temperature ${SenecResponse.getBatteryTemperature()} °C`, this.name);
+        return SenecResponse.getBatteryTemperature();
+    }
 
 
 
@@ -464,6 +490,8 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.CharHousePower.sendEventNotification(lo_response.getHousePower());
         this.CharEnergyState.updateValue(lo_response.getEnergyState());
         this.CharEnergyStateText.updateValue(lo_response.getEnergyStateText());
+        this.CharCaseTemp.updateValue(lo_response.getCaseTemperature());
+        this.CharBatteryTemp.updateValue(lo_response.getBatteryTemperature());
               
     }
 
