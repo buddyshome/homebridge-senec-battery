@@ -95,7 +95,7 @@ export class HomebridgeSenecBatteryAssoc implements AccessoryPlugin {
         this.ServiceGen.addCharacteristic(this.CharCaseTemp);
         this.ServiceGen.addCharacteristic(this.CharBatteryTemp);
 
-        this.SenecApi = new SenecAPI(this.host, this.ssl, this.sslUnsecure);
+        this.SenecApi = new SenecAPI(this.host, this.ssl, this.sslUnsecure, this.log);
 
         // create handlers for required characteristics
         this.BatteryService.getCharacteristic(hap.Characteristic.StatusLowBattery)
