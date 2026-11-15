@@ -1,16 +1,16 @@
 {
   "name": "homebridge-senec-battery",
-  "version": "2.50.0",
+  "version": "2.52.0",
   "description": "Homebridge Senec battery",
   "type": "module",
   "main": "dist/homebridge-senec-battery-platform.js",
   "scripts": {
     "clean": "rimraf ./dist",
+    "prebuild": "npm link homebridge",
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run build ",
     "postpublish": "npm run clean",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "npm run build && nodemon",
     "start": "npm run build && homebridge -I -D ",
     "link": "npm unlink senec-battery && npm link senec-battery",
     "unlink": "npm unlink senec-battery && npm install senec-battery@latest --save",
@@ -24,12 +24,12 @@
   ],
   "engines": {
     "homebridge": "^1.6.0 || ^2.0.0",
-    "node": "^18.20.4 || ^20.15.1 || ^22 || ^24"
+    "node": "^22 || ^24 || ^26"
   },
   "keywords": [
     "homebridge-plugin"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "LICENSE",
     "dist",
@@ -39,24 +39,25 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/buddyshome/homebridge-senec-battery"
+    "url": "git+https://github.com/buddyshome/homebridge-senec-battery.git"
   },
   "bugs": {
     "url": "https://github.com/buddyshome/homebridge-senec-battery/issues"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@types/node": "^22.19.15",
-    "eslint": "^9.39.4",
-    "homebridge": "^2.4.0",
-    "homebridge-lib": "^7.3.2",
-    "nodemon": "^3.1.14",
-    "rimraf": "^6.1.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.2"
+    "@types/node": "^26.6.6",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2"
+  },
+  "peerDependencies": {
+    "homebridge": "^1.6.0 || ^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "homebridge": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "senec-battery": "^1.20.4"
+    "senec-battery": "^1.22.0"
   }
 }

@@ -12,9 +12,9 @@ The **Homebridge Senec Battery Plugin** integrates your **Senec Home Energy Stor
 
 ## Prerequisites
 
-- **Homebridge**: Install and configure Homebridge. See [Homebridge Documentation](https://homebridge.io).
+- **Homebridge**: Version 1.6 or later, including Homebridge 2.x (tested with 2.5). See [Homebridge Documentation](https://homebridge.io).
 - **Senec Home Energy Storage System**: Ensure your Senec battery is configured and accessible on your local network.
-- **Node.js**: Requires Node.js version 20 or later.
+- **Node.js**: Supported versions are 22, 24 and 26. Homebridge 2.5 itself requires Node.js 22.12 or later.
 
 ## Installation
 
@@ -29,31 +29,49 @@ The **Homebridge Senec Battery Plugin** integrates your **Senec Home Energy Stor
 
 ## Configuration
 
-Here are the available configuration options for the plugin:
+The plugin is configured as one platform with a list of `devices`, so several Senec batteries (e.g. master and slave) can be added at once. The easiest way is the plugin settings in the Homebridge UI.
 
-| **Option**        | **Type**  | **Required** | **Description**                                                                                   | **Default**               | **Placeholder**           |
-|--------------------|-----------|--------------|---------------------------------------------------------------------------------------------------|---------------------------|---------------------------|
-| `platform`        | String    | Yes          | Set to `"SenecBattery"`. Required to identify the plugin.                                         | -                         | -                         |
-| `name`            | String    | Yes          | The name shown in the Homebridge logs and used as the default name in HomeKit.                   | -                         | `Senec-Battery-Master`    |
-| `host`            | String    | Yes          | The IP address or hostname of your Senec system. Ensure the system is reachable on your network. | -                         | `e.g. 192.168.1.100`      |
-| `verbose`         | Boolean   | No           | Enable more detailed output in Homebridge logs for troubleshooting purposes.                     | `false`                   | -                         |
-| `ssl`             | Boolean   | No           | Switch to HTTPS for secure communication.                                                        | `false`                   | -                         |
-| `sslUnsecure`     | Boolean   | No           | Ignore SSL errors (useful for self-signed certificates or testing environments).                  | `false`                   | -                         |
+### Platform options
+
+| **Option**  | **Type** | **Required** | **Description**                                                     | **Default**                |
+|-------------|----------|--------------|---------------------------------------------------------------------|----------------------------|
+| `platform`  | String   | Yes          | Set to `"homebridge-senec-battery"`. Required to identify the plugin. | -                          |
+| `name`      | String   | Yes          | Plugin name as displayed in the Homebridge log.                     | `homebridge-senec-battery` |
+| `devices`   | Array    | Yes          | One entry per Senec battery (see device options below).             | -                          |
+
+### Device options
+
+| **Option**    | **Type** | **Required** | **Description**                                                                                   | **Default** | **Placeholder**        |
+|---------------|----------|--------------|---------------------------------------------------------------------------------------------------|-------------|------------------------|
+| `name`        | String   | Yes          | The name shown in the Homebridge logs and used as the default name in HomeKit.                   | -           | `Senec-Battery-Master` |
+| `host`        | String   | Yes          | IP address or hostname of the Senec battery, optionally with a port. No `http://` or paths.      | -           | `e.g. 192.168.1.100`   |
+| `verbose`     | Boolean  | No           | Enable more detailed output in Homebridge logs for troubleshooting purposes.                     | `false`     | -                      |
+| `ssl`         | Boolean  | No           | Switch to HTTPS for secure communication.                                                        | `false`     | -                      |
+| `sslUnsecure` | Boolean  | No           | Ignore SSL errors (useful for self-signed certificates).                                          | `false`     | -                      |
 
 ### Example `config.json`
 
 ```json
 {
-  "platforms": [  
-    {  
-      "platform": "SenecBattery",  
-      "name": "Senec-Battery-Master",  
-      "host": "192.168.1.100",  
-      "verbose": false,  
-      "ssl": false,  
-      "sslUnsecure": false  
-    }  
-  ]  
+  "platforms": [
+    {
+      "platform": "homebridge-senec-battery",
+      "name": "homebridge-senec-battery",
+      "devices": [
+        {
+          "name": "Senec-Battery-Master",
+          "host": "192.168.1.100",
+          "verbose": false,
+          "ssl": false,
+          "sslUnsecure": false
+        },
+        {
+          "name": "Senec-Battery-Slave",
+          "host": "192.168.1.101"
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -82,18 +100,52 @@ Once configured, the plugin will expose your Senec battery system to HomeKit.
 - **Errors in logs?**  
   Enable `verbose` logging for more details and review the logs in Homebridge.
 
+## Development
+
+The project does not install Homebridge as a local dependency. Instead, it builds against a globally installed Homebridge:
+
+1. Install Homebridge globally:
+   ```bash
+   npm install -g homebridge
+   ```
+2. Install the project dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the plugin:
+   ```bash
+   npm run build
+   ```
+   A `prebuild` step runs `npm link homebridge`, which links the global Homebridge into `node_modules` so TypeScript can find its type definitions. `npm install` removes this link, but every build recreates it.
+
+To run Homebridge in debug mode with the plugin, use `npm start`.
+
+### Testing with a local `senec-battery`
+
+To test unreleased changes of the [senec-battery](https://github.com/buddyshome/senec-battery) library:
+
+1. In the `senec-battery` folder, build it and register it globally: `npm run build && npm link`
+2. In this folder, link both packages and compile with `tsc` directly (`npm run build` would relink only Homebridge and replace the local library with the published one):
+   ```bash
+   npm link homebridge senec-battery
+   npx rimraf dist && npx tsc
+   ```
+3. Start Homebridge: `homebridge -I -D`
+
+Running `npm install` restores the published `senec-battery`.
+
 ## Contribution
 
 We welcome contributions to improve this plugin! Here's how to get involved:
 
 1. Fork this repository.
 2. Create a new branch for your feature or bug fix.
-3. Test your changes thoroughly.
+3. Test your changes thoroughly (see [Development](#development)).
 4. Submit a pull request with a detailed explanation of your changes.
 
 ## Support
 
-If you encounter issues or have feature requests, please open an issue on the [GitHub repository](https://github.com/your-username/homebridge-senec-battery).
+If you encounter issues or have feature requests, please open an issue on the [GitHub repository](https://github.com/buddyshome/homebridge-senec-battery/issues).
 
 ## License
 
